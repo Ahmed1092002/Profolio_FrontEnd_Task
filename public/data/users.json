@@ -1,0 +1,9 @@
+[
+  {
+    "id": 1,
+    "username": "user",
+    "password": "user123",
+    "name": "Regular User",
+    "email": "user@library.com"
+  }
+]
