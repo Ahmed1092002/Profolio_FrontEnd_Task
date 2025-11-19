@@ -6,10 +6,14 @@ import useLibraryData from "../hooks/useLibraryData";
 import { useParams } from "react-router-dom";
 import Table from "../components/Table/Table";
 import { useSearchParams } from "react-router-dom";
+import { useAuth } from "../contexts/AuthProvider";
+import TableActions from "../components/ActionButton/TableActions";
 
 const Inventory = () => {
   const { storeId } = useParams();
   const [searchParams] = useSearchParams();
+  const { isAuthenticated } = useAuth();
+
   const searchTerm = searchParams.get("search") || "";
   const { inventory, setInventory, storeBooks, authorMap, books } =
     useLibraryData({
@@ -146,8 +150,8 @@ const Inventory = () => {
     [inventory, storeId, setInventory]
   );
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const baseColumns = [
       { header: "Book Id", accessorKey: "id" },
       { header: "Name", accessorKey: "name" },
       { header: "Pages", accessorKey: "page_count" },
@@ -161,28 +165,25 @@ const Inventory = () => {
         accessorKey: "price",
         cell: ({ row }) => `$${row.original.price}`,
       },
-      {
+    ];
+
+    if (isAuthenticated) {
+      baseColumns.push({
         header: "Actions",
+        id: "actions",
         cell: ({ row }) => (
-          <div className="flex gap-2">
-            <button
-              className="py-1 px-2 bg-(--color-main) text-white rounded "
-              onClick={() => openEditModal(row.original)}
-            >
-              Edit
-            </button>
-            <button
-              className="py-1 px-2 bg-red-600 text-white rounded "
-              onClick={() => openDeleteModal(row.original)}
-            >
-              Delete
-            </button>
-          </div>
+          <TableActions
+            row={row}
+            onEdit={() => openEditModal(row.original)}
+            onDelete={() => openDeleteModal(row.original)}
+            disabled={!isAuthenticated}
+          />
         ),
-      },
-    ],
-    [authorMap]
-  );
+      });
+    }
+
+    return baseColumns;
+  }, [authorMap, isAuthenticated]);
 
   return (
     <div className="py-6">

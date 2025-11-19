@@ -3,9 +3,11 @@ import Header from '../components/Header';
 import Loading from './Loading';
 import BooksTable from '../components/BooksTable';
 import { useSearchParams } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthProvider';
 import Modal from '../components/Modal';
 
 const Books = () => {
+  const { isAuthenticated } = useAuth();
   const [books, setBooks] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -88,6 +90,7 @@ const Books = () => {
           setEditName={setEditName}
           setBooks={setBooks}
           deleteBook={deleteBook}
+          isAuthenticated={isAuthenticated}
         />
       ) : (
         <Loading />
