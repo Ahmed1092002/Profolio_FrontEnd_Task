@@ -50,8 +50,8 @@ npm run dev
 Edit `.env` file:
 
 ```env
-# Choose API mode: 'local', 'mock', or 'api'
-VITE_API_MODE=local
+# Choose API mode: 'mock', or 'api'
+VITE_API_MODE=api
 
 # Mock server URL (for JSON Server)
 VITE_MOCK_API_URL=http://localhost:3001
@@ -60,30 +60,9 @@ VITE_MOCK_API_URL=http://localhost:3001
 VITE_API_URL=https://your-backend-api.com/api
 ```
 
-### Switching Between Modes
 
-**Option 1: Edit `.env` file**
 
-```env
-# Use local JSON files (default)
-VITE_API_MODE=local
 
-# Use JSON Server (mock)
-VITE_API_MODE=mock
-
-# Use production backend
-VITE_API_MODE=api
-```
-
-**Option 2: Command line override**
-
-```bash
-# Windows (PowerShell)
-$env:VITE_API_MODE="mock"; npm run dev
-
-# Linux/Mac
-VITE_API_MODE=mock npm run dev
-```
 
 ---
 
