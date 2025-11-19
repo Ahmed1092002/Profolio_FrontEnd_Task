@@ -1,79 +1,51 @@
-// handle auth provider logic here
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { fetchData } from "../services/api";
 
-const AuthContext = createContext(undefined);
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
+  // Restore session from localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("authenticatedUser");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (err) {
-        localStorage.removeItem("authenticatedUser");
-      }
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
     }
   }, []);
 
   const login = async (username, password) => {
     try {
-      const response = await fetch("/data/users.json");
-      const usersData = await response.json();
-
-      const foundUser = usersData.find(
+      const users = await fetchData("users");
+      const foundUser = users.find(
         (u) => u.username === username && u.password === password
       );
 
       if (foundUser) {
-        const authenticatedUser = {
-          id: foundUser.id,
-          username: foundUser.username,
-          name: foundUser.name,
-          email: foundUser.email,
-        };
-
-        setUser(authenticatedUser);
-        localStorage.setItem(
-          "authenticatedUser",
-          JSON.stringify(authenticatedUser)
-        );
+        const { password: _, ...userWithoutPassword } = foundUser;
+        setUser(userWithoutPassword);
+        localStorage.setItem("user", JSON.stringify(userWithoutPassword));
         return true;
       }
-
       return false;
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error("Login error:", error);
       return false;
     }
   };
 
-  // Logout function: clear state and storage
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("authenticatedUser");
-  };
-
-  const isAuthenticated = user !== null;
-
-  const contextValue = {
-    user,
-    login,
-    logout,
-    isAuthenticated,
+    localStorage.removeItem("user");
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+    <AuthContext.Provider
+      value={{ user, login, logout, isAuthenticated: !!user }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
 };
 
-// Custom hook for easy access
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);

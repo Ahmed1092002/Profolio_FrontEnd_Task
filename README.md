@@ -16,7 +16,13 @@
    npm run dev
    ```
 
-3. **Build for production**:
+3. **Start with Mock Server (optional)**:
+   ```bash
+   npm run dev:mock
+   ```
+   See [MOCK_SERVER_SETUP.md](MOCK_SERVER_SETUP.md) for details on switching between local JSON files and mock REST API.
+
+4. **Build for production**:
    ```bash
    npm run build
    ```  
